@@ -2,8 +2,6 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USERNAME = "vishalmahawar5200"
-        DOCKER_PASSWORD = "RJ09GC2017" 
         DOCKER_IMAGE = "vishalmahawar5200/21april2025"
     }
 
@@ -17,7 +15,7 @@ pipeline {
             }
         }
 
-        stage('Start Docker Daemon (if not running)') {
+        stage('Start Docker Daemon') {
             steps {
                 sh '''
                     if ! pgrep dockerd > /dev/null; then
@@ -31,7 +29,7 @@ pipeline {
             }
         }
 
-        stage('Verify Docker Version') {
+        stage('Check Docker Version') {
             steps {
                 sh 'docker --version'
             }
@@ -44,27 +42,42 @@ pipeline {
         }
 
         stage('Login to Docker Hub') {
+            environment {
+                DOCKER_CREDENTIALS = credentials('dockerhub-creds')
+            }
             steps {
-                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                sh 'echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin'
             }
         }
 
-        stage('Push and Deploy Docker Image') {
+        stage('Push Docker Image') {
             steps {
                 script {
                     def imageTag = "v${env.BUILD_NUMBER}"
                     def fullImage = "${DOCKER_IMAGE}:${imageTag}"
-
-                    sh "docker tag vishal:t1 ${fullImage}"
-                    sh "docker push ${fullImage}"
-
                     sh """
-                        ssh root@37.27.210.146 << EOF
-                        docker pull ${fullImage}
-                        docker stop deployed_app || true
-                        docker rm deployed_app || true
-                        docker run -d --name deployed_app -p 8066:80 ${fullImage}
-                        EOF
+                        docker tag vishal:t1 ${fullImage}
+                        docker push ${fullImage}
+                        docker tag ${fullImage} ${DOCKER_IMAGE}:latest
+                        docker push ${DOCKER_IMAGE}:latest
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to Deploy Server') {
+            steps {
+                script {
+                    def imageTag = "v${env.BUILD_NUMBER}"
+                    def fullImage = "${DOCKER_IMAGE}:${imageTag}"
+                    sh """
+                        ssh root@37.27.210.146 '
+                            docker pull ${fullImage} &&
+                            docker tag ${fullImage} ${DOCKER_IMAGE}:latest &&
+                            cd /home/ubuntu/app &&
+                            docker-compose down &&
+                            docker-compose up -d
+                        '
                     """
                 }
             }
