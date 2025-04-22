@@ -43,7 +43,7 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                sh 'docker run -d -p 8080:80 vishal:t1'
+                sh 'docker run -d -p 8022:80 vishal:t1'
             }
         }
 
