@@ -55,6 +55,6 @@ pipeline {
                     sh "docker push $DOCKER_IMAGE:${imageTag}"
                 }
             }
-        }
+        }                       
     }
 }
