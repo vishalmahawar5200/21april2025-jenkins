@@ -41,12 +41,6 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
-            steps {
-                sh 'docker run -d -p 8022:80 vishal:t1'
-            }
-        }
-
         stage('Login to Docker Hub') {
             steps {
                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
@@ -56,7 +50,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 sh 'docker tag vishal:t1:v1'
-                sh 'docker push $DOCKER_IMAGE:v1'
+                sh 'docker push vishalmahwar5200/21april2025:v1'
             }
         }
     }
