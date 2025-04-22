@@ -1,10 +1,12 @@
 pipeline {
     agent any
+
     environment {
         DOCKER_USERNAME = "vishalmahawar5200"
-        DOCKER_PASSWORD = "RJ09GC2017"
+        DOCKER_PASSWORD = "RJ09GC2017" 
         DOCKER_IMAGE = "vishalmahawar5200/21april2025"
     }
+
     stages {
         stage('Install Dependencies') {
             steps {
@@ -47,20 +49,25 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push and Deploy Docker Image') {
             steps {
                 script {
                     def imageTag = "v${env.BUILD_NUMBER}"
-                    sh "docker tag vishal:t1 $DOCKER_IMAGE:${imageTag}"
-                    sh "docker push $DOCKER_IMAGE:${imageTag}"
-                    sh ""
-                        ssh root@37.27.210.146
-                        docker pull ${fullImage} &&
-                        docker stop deployed_app || true &&
-                        docker rm deployed_app || true &&
-                        docker  run -d --name deployed_app -p 8066:80 ${fullImage}
+                    def fullImage = "${DOCKER_IMAGE}:${imageTag}"
+
+                    sh "docker tag vishal:t1 ${fullImage}"
+                    sh "docker push ${fullImage}"
+
+                    sh """
+                        ssh root@37.27.210.146 << EOF
+                        docker pull ${fullImage}
+                        docker stop deployed_app || true
+                        docker rm deployed_app || true
+                        docker run -d --name deployed_app -p 8066:80 ${fullImage}
+                        EOF
+                    """
                 }
             }
-        }                       
+        }
     }
 }
