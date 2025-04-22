@@ -23,6 +23,11 @@ pipeline {
                 sh 'sudo docker build -t vishal:t1 .'
             }
         }
+        stage("docker ports"){
+            steps{
+                sh "docker run -d -p 8080:80 vishal:t1"
+            }
+        }
 
         stage('Login to Docker Hub') {
             steps {
