@@ -1,9 +1,9 @@
 pipeline {
     agent any
     environment {
-        DOCKER_USERNAME = "vishalmahawar2200" // Your Docker Hub username
-        DOCKER_PASSWORD = "RJ09GC2017" // Your Docker Hub password
-        DOCKER_IMAGE = "vishalmahawar2200/21april2025" // Your Docker image name
+        DOCKER_USERNAME = "vishalmahawar2200"
+        DOCKER_PASSWORD = "RJ09GC2017"
+        DOCKER_IMAGE = "vishalmahawar2200/21april2025"
     }
     stages {
         stage('Install Dependencies') {
@@ -12,23 +12,28 @@ pipeline {
             }
         }
 
+        stage('Verify Docker Version') {
+            steps {
+                sh 'docker --version'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t vishal:t1 .'
+                sh 'sudo docker build -t vishal:t1 .'
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                // Login manually with the username and password
-                sh "echo RJ09GC2017 | docker login -u vishalmahawar5200 --password-stdin"
+                sh 'echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                sh "docker push vishalmahawar5200/21april2025"
+                sh 'sudo docker push vishalmahawar5200/21april2025:v1'
             }
         }
-    } 
+    }
 }
