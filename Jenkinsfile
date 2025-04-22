@@ -14,10 +14,10 @@ pipeline {
                 '''
             }
         }
-          stage('Start Docker Daemon (if not running)') {
+
+        stage('Start Docker Daemon (if not running)') {
             steps {
                 sh '''
-                    # Try starting Docker daemon in background if not active
                     if ! pgrep dockerd > /dev/null; then
                         echo "Starting Docker daemon..."
                         nohup dockerd > /tmp/dockerd.log 2>&1 &
@@ -29,7 +29,7 @@ pipeline {
             }
         }
 
-    stage('Verify Docker Version') {
+        stage('Verify Docker Version') {
             steps {
                 sh 'docker --version'
             }
@@ -49,9 +49,11 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                sh 'docker tag vishal:t1 $DOCKER_IMAGE:v1'
-                sh 'docker push $DOCKER_IMAGE:v1'
-
+                script {
+                    def imageTag = "v${env.BUILD_NUMBER}"
+                    sh "docker tag vishal:t1 $DOCKER_IMAGE:${imageTag}"
+                    sh "docker push $DOCKER_IMAGE:${imageTag}"
+                }
             }
         }
     }
