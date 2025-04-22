@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_USERNAME = "vishalmahawar2200"
+        DOCKER_USERNAME = "vishalmahawar5200"
         DOCKER_PASSWORD = "RJ09GC2017"
         DOCKER_IMAGE = "vishalmahawar2200/21april2025"
     }
@@ -55,7 +55,7 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                sh 'docker tag vishal:t1 $DOCKER_IMAGE:v1'
+                sh 'docker tag vishal:t1:v1'
                 sh 'docker push $DOCKER_IMAGE:v1'
             }
         }
