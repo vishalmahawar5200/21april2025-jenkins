@@ -8,11 +8,14 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'apt update && apt install -y docker.io sudo'
+                sh '''
+                    apt update
+                    apt install -y docker.io sudo
+                '''
             }
         }
 
-        stage('Verify Docker Version') {
+    stage('Verify Docker Version') {
             steps {
                 sh 'docker --version'
             }
@@ -20,24 +23,26 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'sudo docker build -t vishal:t1 .'
+                sh 'docker build -t vishal:t1 .'
             }
         }
-        stage("docker ports"){
-            steps{
-                sh "docker run -d -p 8080:80 vishal:t1"
+
+        stage('Run Docker Container') {
+            steps {
+                sh 'docker run -d -p 8080:80 vishal:t1'
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
-                sh 'echo $DOCKER_PASSWORD | sudo docker login -u $DOCKER_USERNAME --password-stdin'
+                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                sh 'sudo docker push vishalmahawar5200/21april2025:v1'
+                sh 'docker tag vishal:t1 $DOCKER_IMAGE:v1'
+                sh 'docker push $DOCKER_IMAGE:v1'
             }
         }
     }
