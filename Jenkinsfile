@@ -53,6 +53,12 @@ pipeline {
                     def imageTag = "v${env.BUILD_NUMBER}"
                     sh "docker tag vishal:t1 $DOCKER_IMAGE:${imageTag}"
                     sh "docker push $DOCKER_IMAGE:${imageTag}"
+                    sh ""
+                        ssh root@37.27.210.146
+                        docker pull ${fullImage} &&
+                        docker stop deployed_app || true &&
+                        docker rm deployed_app || true &&
+                        docker  run -d --name deployed_app -p 8066:80 ${fullImage}
                 }
             }
         }                       
