@@ -2,8 +2,8 @@ pipeline {
     agent any
     environment {
         DOCKER_USERNAME = "vishalmahawar2200" // Your Docker Hub username
-        DOCKER_PASSWORD = "xyfsfafa" // Your Docker Hub password
-        DOCKER_IMAGE = "vishalmahawar2200/your-repository-name" // Your Docker image name
+        DOCKER_PASSWORD = "RJ09GC2017" // Your Docker Hub password
+        DOCKER_IMAGE = "vishalmahawar2200/21april2025" // Your Docker image name
     }
     stages {
         stage('Install Dependencies') {
@@ -24,9 +24,11 @@ pipeline {
                 sh "echo RJ09GC2017 | docker login -u vishalmahawar5200 --password-stdin"
             }
         }
-        stage('Push Docker Image'){
-            steps{
+
+        stage('Push Docker Image') {
+            steps {
                 sh "docker push vishalmahawar5200/21april2025"
             }
         }
-    }
+    } 
+}
